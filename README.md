@@ -14,7 +14,9 @@ The Adzuna credentials are used only by the server routes at `/api/jobs` and `/a
 
 ## Current scope
 
-- Search job listings by title with optional location, full-time/part-time, and permanent/contract filters.
+- Search job listings by title with optional valid location dropdown, full-time/part-time, and permanent/contract filters. Run an initial broad search to populate location choices from actual Adzuna listings.
+- Correct obvious misspellings in common job-title words and explain the correction before showing results.
+- Sort listings newest first.
 - Display employer, location, date, description excerpt, and original listing link. Label salary figures as advertised, Adzuna-predicted, or unknown based on the API's `salary_is_predicted` field.
 - Optionally load Adzuna salary distribution, average salary by month, and top-five employers for a role.
 - Page through results using Adzuna's search pages; uncached page requests each use API quota.
@@ -23,6 +25,8 @@ The Adzuna credentials are used only by the server routes at `/api/jobs` and `/a
 - Keep the provider integration and normalized job shape separate from the interface so richer related-role analysis can be added later.
 
 Adzuna's public search endpoint returns a short description excerpt rather than the complete job post. The expanded card shows the full excerpt returned by the API and links to the source listing for its complete version. Salary figures are shown as supplied; currency and pay period may not be standardized across listings. See [Adzuna's search documentation](https://developer.adzuna.com/docs/search).
+
+Location choices are drawn from locations present in the job results already loaded in the current browser session. This guarantees the dropdown only offers observed Adzuna locations, but means users need to run a broad role search before choosing a location. Title correction uses a small vocabulary of common role terms and edit distance; it does not recognize every typo, abbreviation, or equivalent title.
 
 The role-pattern panel analyzes only the jobs on the currently displayed page (up to 20), not every result in the total count. Skill identification uses a small built-in vocabulary and simple text matching; it can miss relevant skills, include contextual mentions, or fail to distinguish mandatory from optional skills when the excerpt does not label sections. Treat it as a quick signal, not a verified job-market analysis. Verify requirements in the employer's full posting.
 

@@ -22,7 +22,7 @@ export async function searchJobs(title: string, page: number, filters: JobSearch
   if (cached && cached.expiresAt > now) return { jobs: cached.jobs, cached: true, totalResults: cached.totalResults, pageCount: cached.pageCount };
 
   reserveAdzunaRequest(now);
-  const params = new URLSearchParams({ app_id: appId, app_key: appKey, what: title, results_per_page: String(RESULTS_PER_PAGE), "content-type": "application/json" });
+  const params = new URLSearchParams({ app_id: appId, app_key: appKey, what: title, results_per_page: String(RESULTS_PER_PAGE), sort_by: "date", "content-type": "application/json" });
   if (filters.location) params.set("where", filters.location);
   if (filters.schedule) params.set(filters.schedule, "1");
   if (filters.employment) params.set(filters.employment, "1");

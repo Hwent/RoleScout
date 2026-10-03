@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { correctJobTitle } from "@/lib/title-matching";
 
 type Job = {
   id: string;
@@ -48,10 +49,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
+  const [searchCorrection, setSearchCorrection] = useState<{ from: string; to: string } | null>(null);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [location, setLocation] = useState("");
+  const [availableLocations, setAvailableLocations] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<Filters["schedule"]>("");
   const [employment, setEmployment] = useState<Filters["employment"]>("");
   const [activeFilters, setActiveFilters] = useState<Filters>({ location: "", schedule: "", employment: "" });
@@ -74,6 +77,7 @@ export default function Home() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Search failed. Please try again.");
       setJobs(data.jobs);
+      setAvailableLocations((current) => [...new Set([...current, ...data.jobs.map((job: Job) => job.location).filter(Boolean)])].sort((a, b) => a.localeCompare(b)));
       setPage(targetPage);
       setPageCount(data.pageCount || 1);
       setTotalResults(data.totalResults || data.jobs.length);
@@ -89,9 +93,12 @@ export default function Home() {
 
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const title = query.trim();
+    const originalTitle = query.trim();
+    const correction = correctJobTitle(originalTitle);
+    const title = correction.title;
     setSearched(true);
     setSearchedTitle(title);
+    setSearchCorrection(correction.corrected ? { from: originalTitle, to: title } : null);
     const filters = { location, schedule, employment };
     setActiveFilters(filters);
     setMarket(null);
@@ -167,19 +174,20 @@ export default function Home() {
           <button type="submit" disabled={loading || !query.trim()}>{loading ? "Searching…" : "Search jobs"}<span aria-hidden="true">→</span></button>
           </div>
           <div className="search-filters">
-            <label>Location<input value={location} onChange={(event) => setLocation(event.target.value)} placeholder="City or region" maxLength={100} /></label>
+            <label>Location<select value={location} onChange={(event) => setLocation(event.target.value)} disabled={availableLocations.length === 0}><option value="">Any location</option>{availableLocations.map((place) => <option key={place} value={place}>{place}</option>)}</select></label>
             <label>Hours<select value={schedule} onChange={(event) => setSchedule(event.target.value as Filters["schedule"])}><option value="">Any schedule</option><option value="full_time">Full-time</option><option value="part_time">Part-time</option></select></label>
             <label>Employment<select value={employment} onChange={(event) => setEmployment(event.target.value as Filters["employment"])}><option value="">Any type</option><option value="permanent">Permanent</option><option value="contract">Contract</option></select></label>
           </div>
         </form>
-        <div className="search-hint">Search by job title <span>·</span> Filter by location, schedule, or employment type</div>
+        <div className="search-hint">Search by job title <span>·</span>{availableLocations.length ? " Choose from locations in Adzuna results" : " Run a broad search to load valid location choices"}</div>
       </section>
 
       <section className="results" aria-live="polite">
         {loading && <div className="state-card"><span className="loader" />Looking for matching roles…</div>}
         {!loading && error && <div className="state-card error-card"><strong>We couldn’t complete that search.</strong><span>{error}</span></div>}
-        {!loading && !error && searched && jobs.length === 0 && <div className="state-card"><strong>No listings found for “{searchedTitle}”.</strong><span>Try a broader job title or another spelling.</span></div>}
+        {!loading && !error && searched && jobs.length === 0 && <div className="state-card"><strong>No listings found for “{searchedTitle}”.</strong><span>{searchCorrection ? `We also tried the corrected title from “${searchCorrection.from}”.` : "Try a broader job title or another spelling."}</span></div>}
         {!loading && !error && jobs.length > 0 && <>
+          {searchCorrection && <div className="search-correction" role="status">Approximate title match: “{searchCorrection.from}” → “{searchCorrection.to}”</div>}
           <div className="results-heading"><div><div className="section-kicker">SEARCH RESULTS</div><h2>Jobs for “{searchedTitle}”</h2></div><span className="result-count">{totalResults.toLocaleString()} listings</span></div>
           <div className="market-action"><p>Explore broader salary and employer patterns for this role.</p><button type="button" onClick={toggleMarket} disabled={marketLoading}>{marketLoading ? "Loading snapshot…" : market ? (marketOpen ? "Hide market snapshot" : "Show market snapshot") : "Load market snapshot"}<span aria-hidden="true">{marketOpen || marketLoading ? "⌃" : "⌄"}</span></button></div>
           {marketOpen && <MarketPanel market={market} loading={marketLoading} error={marketError} />}
