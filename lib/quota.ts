@@ -18,19 +18,20 @@ export class ApiLimitError extends Error {
 }
 
 /** Process-local guard for the first, single-instance deployment. */
-export function reserveAdzunaRequest(now = Date.now()) {
+export function reserveAdzunaRequest(now = Date.now(), amount = 1) {
+  if (!Number.isInteger(amount) || amount < 1) throw new Error("Quota reservation amount must be a positive integer.");
   const current: Partial<Record<WindowName, WindowCounter>> = {};
   for (const name of Object.keys(limits) as WindowName[]) {
     const setting = limits[name];
     const old = counters.get(name);
     current[name] = !old || now - old.startsAt >= setting.durationMs ? { startsAt: now, count: 0 } : old;
-    if (current[name]!.count >= setting.max) {
+    if (current[name]!.count + amount > setting.max) {
       const remainingMs = setting.durationMs - (now - current[name]!.startsAt);
       throw new ApiLimitError("Search quota is temporarily used up. Please try again later.", Math.max(1, Math.ceil(remainingMs / 1000)));
     }
   }
   for (const name of Object.keys(limits) as WindowName[]) {
     const value = current[name]!;
-    counters.set(name, { ...value, count: value.count + 1 });
+    counters.set(name, { ...value, count: value.count + amount });
   }
 }

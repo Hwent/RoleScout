@@ -11,6 +11,8 @@ export type Job = {
   created: string | null;
   salaryMin: number | null;
   salaryMax: number | null;
+  salaryIsPredicted: boolean | null;
+  locationArea: string[];
 };
 
 type AdzunaListing = {
@@ -21,8 +23,9 @@ type AdzunaListing = {
   created?: string;
   salary_min?: number;
   salary_max?: number;
+  salary_is_predicted?: number | string;
   company?: { display_name?: string };
-  location?: { display_name?: string };
+  location?: { display_name?: string; area?: string[] };
 };
 
 export function normalizeJob(listing: AdzunaListing): Job {
@@ -41,6 +44,8 @@ export function normalizeJob(listing: AdzunaListing): Job {
     created: listing.created || null,
     salaryMin: Number.isFinite(listing.salary_min) ? listing.salary_min! : null,
     salaryMax: Number.isFinite(listing.salary_max) ? listing.salary_max! : null,
+    salaryIsPredicted: listing.salary_is_predicted === 1 || listing.salary_is_predicted === "1" ? true : listing.salary_is_predicted === 0 || listing.salary_is_predicted === "0" ? false : null,
+    locationArea: Array.isArray(listing.location?.area) ? listing.location.area.filter((part): part is string => typeof part === "string") : [],
   };
 }
 
