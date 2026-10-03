@@ -15,8 +15,12 @@ The Adzuna credentials are used only by the server route at `/api/jobs`; they ar
 ## Current scope
 
 - Search job listings by title.
-- Display employer, location, salary when supplied, date, description, and original listing link.
-- Keep the provider integration and normalized job shape separate from the interface so skill summaries and related-role analysis can be added later.
+- Display employer, location, salary when supplied, date, description excerpt, and original listing link.
+- Page through results using Adzuna's search pages; uncached page requests each use API quota.
+- Identify required and preferred skills when the listing labels those sections; otherwise summarize recognizable skill terms found in the excerpt.
+- Keep the provider integration and normalized job shape separate from the interface so related-role analysis can be added later.
+
+Adzuna's public search endpoint returns a short description excerpt rather than the complete job post. The expanded card shows the full excerpt returned by the API and links to the source listing for its complete version. See [Adzuna's search documentation](https://developer.adzuna.com/docs/search).
 
 ## Quota and deployment note
 

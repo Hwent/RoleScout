@@ -39,12 +39,30 @@ h2{font:700 22px Aptos,"Segoe UI",sans-serif;letter-spacing:-.6px;margin:0}
 .job-heading p{font-size:12px;color:var(--muted);margin:0}
 .open-link{height:30px;width:30px;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;color:var(--green);font-size:16px}
 .job-meta{display:flex;flex-wrap:wrap;gap:8px 17px;margin:16px 0 14px 53px;font-size:11px;color:#7a8780}
+.skill-summary{display:grid;gap:11px;padding:14px 0 16px;border-top:1px solid #edf0eb}
+.skill-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.skill-group-title{display:flex;align-items:center;gap:7px;min-width:142px;color:#4d5e54;font-size:10px;font-weight:700}
+.inferred-label{font-size:8px;letter-spacing:.7px;color:#8a9668;background:#f0f3e7;padding:3px 5px;border-radius:4px}
+.skill-chips{display:flex;flex-wrap:wrap;gap:5px}
+.skill-chip{font-size:10px;color:#345445;background:#eef4ec;border:1px solid #e2ebdf;border-radius:20px;padding:4px 8px}
+.skill-empty{font-size:10px;color:#879189}
 .description{border-top:1px solid #edf0eb;color:#55645b}
 .description summary{list-style:none;cursor:pointer;padding:14px 0;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:var(--green)}
 .description summary::-webkit-details-marker{display:none}
 .description summary span{font-size:17px;color:#84938a}
 .description[open] summary span{transform:rotate(45deg)}
-.description p{white-space:pre-line;font-size:13px;line-height:1.75;color:#59675f;margin:0 0 20px}
+.description p{white-space:pre-line;font-size:13px;line-height:1.75;color:#59675f;margin:0 0 15px}
+.description .description-note{font-size:11px;color:#879189;margin:16px 0 8px;padding-top:12px;border-top:1px solid #edf0eb}
+.source-link{display:inline-block;font-size:11px;font-weight:700;color:var(--green-2);margin-bottom:18px}
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 8px;padding:13px 14px;background:white;border:1px solid var(--line);border-radius:11px}
+.page-step,.page-number{height:34px;border:1px solid var(--line);border-radius:7px;background:white;color:#526158;font:600 11px Aptos,"Segoe UI",sans-serif;cursor:pointer}
+.page-step{padding:0 11px}
+.page-number{width:34px}
+.page-numbers{display:flex;align-items:center;gap:5px}
+.page-number.active{border-color:var(--green);background:var(--green);color:white}
+.page-step:hover:not(:disabled),.page-number:hover:not(:disabled){border-color:#a8b9a8;color:var(--green)}
+.page-step:disabled,.page-number:disabled{opacity:.4;cursor:not-allowed}
+.page-ellipsis{color:#849188;font-size:12px;padding:0 3px}
 .state-card{padding:23px;border:1px solid var(--line);background:white;border-radius:13px;display:flex;align-items:center;gap:11px;color:var(--muted);font-size:13px}
 .state-card strong{color:var(--ink)}
 .error-card{align-items:flex-start;flex-direction:column;gap:5px}
